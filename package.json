@@ -1,13 +1,24 @@
 {
   "name": "av-components",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "main": "dist/av-components.common.js",
+  "module": "dist/av-components.umd.min.js",
+  "author": {
+    "name": "Adriano Barbosa",
+    "email": "adriano@adrianob.com.br"
+  },
+  "description": "this is my own vue components package",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve  --dev",
+    "build": "vue-cli-service build --target lib --name av-components src/index.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "bootstrap": "^5.3.1",
     "core-js": "^3.8.3",
     "vue": "^3.2.13"
   },
@@ -18,7 +29,10 @@
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "eslint-plugin-vue": "^8.0.3",
+    "sass": "^1.66.1",
+    "sass-loader": "^13.3.2",
+    "webpack": "^5.88.2"
   },
   "eslintConfig": {
     "root": true,
