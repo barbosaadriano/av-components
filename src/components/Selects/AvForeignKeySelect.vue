@@ -1,27 +1,30 @@
 <template>
-    <div>
-        <label>{{label}}</label><br>
+    <div class="dropdown">
+        <label class="form-label">{{ label }}</label><br>
         <input type="hidden" :name="props.name" :value="joinedSelectedKeys">
-        <input type="text" :value="joinedSelectedValues" readonly>
-        <div><!--wrapper para pesquisa-->
-            <div><!--header da pesquisa-->
-                <input type="search">
-                <div>
-                    Select all, number of pages, navigations clear selection
+        <input class="form-control dropdown-toggle" type="text" data-bs-toggle="dropdown" :value="joinedSelectedValues"
+            readonly>
+        <ul class="dropdown-menu"><!--wrapper para pesquisa-->
+            <div class="card">
+                <div class="card-header"><!--header da pesquisa-->
+                    <input type="search" class="form-control">
+                    <div>
+                        Select all, number of pages, navigations clear selection
+                    </div>
                 </div>
-            </div>
-             <div><!--body to list itens-->
-                <ul>
-                    <li v-for="item in availables" :key="item[keyFieldName]">
+                <div class="card-body"><!--body to list itens-->
+
+                    <li class="dropdown-item" v-for="item in availables" :key="item[keyFieldName]">
                         {{ item[valueFildName] }}
                     </li>
-                </ul>
-             </div>
-             <div>
-                footer goes here,
-                close button, apply button
-             </div>
-        </div>
+
+                </div>
+                <div class="card-footer">
+                    footer goes here,
+                    close button, apply button
+                </div>
+            </div>
+        </ul>
     </div>
 </template>
 
@@ -43,20 +46,20 @@ const props = defineProps({
     },
     selecteds: {
         type: Array,
-        default: ()=>[]
+        default: () => []
     },
     availables: {
         type: Array,
-        default: ()=>[]
+        default: () => []
     }
 });
-const joinedSelectedKeys = computed(()=>{
-    if (props.selecteds.length==0) return "";
-    return props.selecteds.map((si)=>si[props.keyFieldName]).join(",");
+const joinedSelectedKeys = computed(() => {
+    if (props.selecteds.length == 0) return "";
+    return props.selecteds.map((si) => si[props.keyFieldName]).join(",");
 });
-const joinedSelectedValues = computed(()=>{
-    if (props.selecteds.length==0) return "";
-    return props.selecteds.map((si)=>si[props.valueFildName]).join(",");
+const joinedSelectedValues = computed(() => {
+    if (props.selecteds.length == 0) return "";
+    return props.selecteds.map((si) => si[props.valueFildName]).join(",");
 });
 
 // selected itens
