@@ -12,7 +12,7 @@
         <div class="searcher" :class="{ hidded: !editing }">
             <div class="searcher-header"><!--header da pesquisa-->
                 <input type="search" ref="searchf" placeholder="localizar" class="form-control">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                     <span>
                         Exibindo 10 de 1000 registros
                     </span>
@@ -30,14 +30,15 @@
                 </div>
             </div>
             <div class="searcher-body"><!--body to list itens-->
-
-                <div class="d-flex justify-content-between" v-for="item in availables" :key="item[keyFieldName]">
-                    <input type="checkbox" :id="item[keyFieldName]" :value="item[valueFildName]" />
-                    <label class="flex-fill" :for="item">{{ item[valueFildName] }}</label>
-                    <button type="button" class="btn btn-light btn-sm flex-fill">
-                        somente
-                    </button>
-                </div>
+                <ul>
+                    <li class="d-flex justify-content-between" v-for="item in availables" :key="item[keyFieldName]">
+                        <input type="checkbox" :id="item[keyFieldName]" :value="item[valueFildName]" />
+                        <label class="flex-fill" :for="item">{{ item[valueFildName] }}</label>
+                        <button type="button" class="btn btn-light btn-sm flex-fill">
+                            somente
+                        </button>
+                    </li>
+                </ul>
 
             </div>
             <div class="searcher-footer">
@@ -138,5 +139,26 @@ const searchf = ref(null);
     height: 200px;
     overflow: hidden;
     overflow-y: scroll;
+}
+
+.searcher-body ul, .searcher-body ul li {
+  display: block;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.searcher-body ul li input, .searcher-header input[type=checkbox] {
+    width: 20px;
+    padding: 5px;
+    margin-right: 20px;
+}
+.searcher-body ul li label {
+  width: 172px;  
+}
+.searcher-body ul li button {
+  visibility: hidden;
+}
+.searcher-body ul li:hover button {
+  visibility: visible;
 }
 </style>
