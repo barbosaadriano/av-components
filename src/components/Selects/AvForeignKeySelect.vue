@@ -9,7 +9,7 @@
             </button>
         </div>
 
-        <div class="searcher" :class="{hidded:!editing}">
+        <div class="searcher" :class="{ hidded: !editing }">
             <div class="searcher-header"><!--header da pesquisa-->
                 <input type="search" ref="searchf" placeholder="localizar" class="form-control">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -19,11 +19,11 @@
                     <button type="button" class="btn me-md-2 btn-sm btn-secondary" @click="closeEdit">
                         <font-awesome-icon icon="fa-solid fa-square-check"></font-awesome-icon> &nbsp; selecionar todos
                     </button>
-                    
+
                     <button type="button" class="btn me-md-2 btn-sm btn-secondary" @click="closeEdit">
                         <font-awesome-icon icon="fa-solid fa-broom"></font-awesome-icon> &nbsp; limpar
                     </button>
-                    
+
                     <button type="button" class="btn me-md-2 btn-sm btn-danger" @click="closeEdit">
                         <font-awesome-icon icon="fa-solid fa-xmark"></font-awesome-icon> &nbsp; fechar
                     </button>
@@ -31,13 +31,17 @@
             </div>
             <div class="searcher-body"><!--body to list itens-->
 
-                <div v-for="item in availables" :key="item[keyFieldName]">
-                    {{ item[valueFildName] }}
+                <div class="d-flex justify-content-between" v-for="item in availables" :key="item[keyFieldName]">
+                    <input type="checkbox" :id="item[keyFieldName]" :value="item[valueFildName]" />
+                    <label class="flex-fill" :for="item">{{ item[valueFildName] }}</label>
+                    <button type="button" class="btn btn-light btn-sm flex-fill">
+                        somente
+                    </button>
                 </div>
 
             </div>
             <div class="searcher-footer">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">                    
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <button type="button" class="btn me-md-2 btn-sm btn-secondary" @click="closeEdit">
                         <font-awesome-icon icon="fa-solid fa-ban"></font-awesome-icon> &nbsp; cancelar
                     </button>
@@ -85,13 +89,13 @@ const joinedSelectedValues = computed(() => {
 });
 
 const editing = ref(false);
-const edit = ()=> {
+const edit = () => {
     editing.value = true;
-    setTimeout(()=>{
+    setTimeout(() => {
         searchf.value.focus();
-    },100);
+    }, 100);
 };
-const closeEdit = ()=> {
+const closeEdit = () => {
     editing.value = false;
 };
 
@@ -113,6 +117,7 @@ const searchf = ref(null);
     box-shadow: 1px 1px 5px lightgray;
     /* display: none; */
 }
+
 .hidded {
     display: none;
 }
@@ -128,6 +133,7 @@ const searchf = ref(null);
 .searcher-body {
     margin-bottom: .5rem;
 }
+
 .searcher-body {
     height: 200px;
     overflow: hidden;
