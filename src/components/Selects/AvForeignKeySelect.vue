@@ -75,7 +75,7 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
-    availables: {
+    availables: {// maybe is better rename this one to items, and an item to have a property to sinalize if its available or not
         type: Array,
         default: () => []
     }
