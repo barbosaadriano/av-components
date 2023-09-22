@@ -7,7 +7,7 @@
         Receive a data source that bring all objects, and some definitions about how is the key name of  objects 
         and what informations (data fields) need to be showned
       </p>
-      <av-foreign-key-select name="meuCampo" :selecteds="selectedTest" :availables="selectedTest"/>
+      <av-foreign-key-select name="meuCampo" :items="selectedTest" @toggle-selection="mudarSelecao" @clear-field="mudarSelecao(false)"/>
     </div>
 </template>
 
@@ -22,17 +22,32 @@ export default {
       selectedTest:[
         {
            id: 1,
-           name: "Adriano"
+           name: "Adriano",
+           available: true,
+           selected: false,
         },
         {
            id: 2,
-           name: "Barbosa"
+           name: "Barbosa",
+           available: false,
+           selected: true,
         },
         {
            id: 3,
-           name: "Adriano Barbosa"
+           name: "Adriano Barbosa",
+           available: true,
+           selected: true,
         }
       ]
+    }
+  },
+  methods: {
+    mudarSelecao(x){
+      this.selectedTest.forEach((t)=> {
+        // if (t.available) {
+          t.selected=x;
+        // }
+      } );
     }
   }
 }

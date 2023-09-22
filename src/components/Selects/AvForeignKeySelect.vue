@@ -11,30 +11,27 @@
 
         <div class="searcher" :class="{ hidded: !editing }">
             <div class="searcher-header"><!--header da pesquisa-->
-                <input type="search" ref="searchf" placeholder="localizar" class="form-control">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <span>
-                        Exibindo 10 de 1000 registros
-                    </span>
-                    <button type="button" class="btn me-md-2 btn-sm btn-secondary" @click="closeEdit">
-                        <font-awesome-icon icon="fa-solid fa-square-check"></font-awesome-icon> &nbsp; selecionar todos
+                <input type="search" ref="searchf" v-model="searchText" placeholder="localizar" class="form-control">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">                    
+                    <button type="button" class="btn me-md-2 btn-sm btn-light" @click.prevent="emit('toggleSelection',!isAllSelected)">
+                        <font-awesome-icon icon="fa-solid fa-square-check"></font-awesome-icon> &nbsp; selecionar {{ isAllSelected ? 'nenhum' : 'todos' }}
                     </button>
 
-                    <button type="button" class="btn me-md-2 btn-sm btn-secondary" @click="closeEdit">
+                    <button type="button" class="btn me-md-2 btn-sm btn-danger" @click.prevent="emit('clearField')">
                         <font-awesome-icon icon="fa-solid fa-broom"></font-awesome-icon> &nbsp; limpar
                     </button>
 
-                    <button type="button" class="btn me-md-2 btn-sm btn-danger" @click="closeEdit">
+                    <button type="button" class="btn me-md-2 btn-sm btn-secondary" @click.prevent="closeEdit">
                         <font-awesome-icon icon="fa-solid fa-xmark"></font-awesome-icon> &nbsp; fechar
                     </button>
                 </div>
             </div>
             <div class="searcher-body"><!--body to list itens-->
                 <ul>
-                    <li class="d-flex justify-content-between" v-for="item in availables" :key="item[keyFieldName]">
-                        <input type="checkbox" :id="item[keyFieldName]" :value="item[valueFildName]" />
+                    <li class="d-flex justify-content-between" v-for="item in filteredItems" :key="item[keyFieldName]">
+                        <input type="checkbox" :id="item[keyFieldName]" :disabled="!item.available" v-model="item.selected" />
                         <label class="flex-fill" :for="item">{{ item[valueFildName] }}</label>
-                        <button type="button" class="btn btn-light btn-sm flex-fill">
+                        <button type="button" class="btn btn-light btn-sm flex-fill" :disabled="!item.available">
                             somente
                         </button>
                     </li>
@@ -42,11 +39,8 @@
 
             </div>
             <div class="searcher-footer">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button type="button" class="btn me-md-2 btn-sm btn-secondary" @click="closeEdit">
-                        <font-awesome-icon icon="fa-solid fa-ban"></font-awesome-icon> &nbsp; cancelar
-                    </button>
-                    <button type="button" class="btn me-md-2 btn-sm btn-primary" @click="closeEdit">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">                    
+                    <button type="button" class="btn me-md-2 btn-sm btn-primary" @click.prevent="closeEdit(true)">
                         <font-awesome-icon icon="fa-solid fa-check"></font-awesome-icon> &nbsp; confirmar
                     </button>
                 </div>
@@ -56,8 +50,9 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed } from 'vue';
+import { ref, defineProps, computed, defineEmits } from 'vue';
 const label = ref("minha label");
+const searchText = ref("");
 const props = defineProps({
     name: {
         type: String,
@@ -70,23 +65,30 @@ const props = defineProps({
     valueFildName: {
         type: String,
         default: 'name'
-    },
-    selecteds: {
-        type: Array,
-        default: () => []
-    },
-    availables: {// maybe is better rename this one to items, and an item to have a property to sinalize if its available or not
+    },    
+    items: {// maybe is better rename this one to items, and an item to have a property to sinalize if its available or not
         type: Array,
         default: () => []
     }
 });
+const isAllSelected = computed(()=>{
+    return props.items.length ===  selectedItems.value.length;
+});
+const filteredItems = computed(()=>{
+    return props.items.filter((i)=>{
+        return i[props.valueFildName].toLowerCase().includes(searchText.value.toLowerCase());
+    });
+});
+const selectedItems = computed(()=>{
+    return props.items.filter((i)=>i.selected===true);
+});
 const joinedSelectedKeys = computed(() => {
-    if (props.selecteds.length == 0) return "";
-    return props.selecteds.map((si) => si[props.keyFieldName]).join(",");
+    if (selectedItems.value.length == 0) return "";
+    return selectedItems.value.map((si) => si[props.keyFieldName]).join(",");
 });
 const joinedSelectedValues = computed(() => {
-    if (props.selecteds.length == 0) return "";
-    return props.selecteds.map((si) => si[props.valueFildName]).join(",");
+    if (selectedItems.value.length == 0) return "";
+    return selectedItems.value.map((si) => si[props.valueFildName]).join(",");
 });
 
 const editing = ref(false);
@@ -96,9 +98,15 @@ const edit = () => {
         searchf.value.focus();
     }, 100);
 };
-const closeEdit = () => {
+const closeEdit = (apply) => {
     editing.value = false;
+    if (apply===true) emit('applied');
 };
+const emit = defineEmits({
+    toggleSelection:null,
+    clearField:null,
+    applied: null
+});
 
 const searchf = ref(null);
 // selected itens
