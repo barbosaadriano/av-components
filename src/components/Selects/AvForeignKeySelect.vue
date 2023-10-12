@@ -1,6 +1,6 @@
 <template>
     <div class="fk-wrapper">
-        <label class="form-label mb-2">{{ label }}</label><br>
+        <label class="form-label mb-2">{{ props.label }}</label><br>
         <input type="hidden" :name="props.name" :value="joinedSelectedKeys">
         <div class="input-group">
             <input class="form-control" type="text" :value="joinedSelectedValues" readonly>
@@ -12,9 +12,11 @@
         <div class="searcher" :class="{ hidded: !editing }">
             <div class="searcher-header"><!--header da pesquisa-->
                 <input type="search" ref="searchf" v-model="searchText" placeholder="localizar" class="form-control">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">                    
-                    <button type="button" class="btn me-md-2 btn-sm btn-light" @click.prevent="emit('toggleSelection',!isAllSelected)">
-                        <font-awesome-icon icon="fa-solid fa-square-check"></font-awesome-icon> &nbsp; selecionar {{ isAllSelected ? 'nenhum' : 'todos' }}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <button type="button" class="btn me-md-2 btn-sm btn-light"
+                        @click.prevent="emit('toggleSelection', !isAllSelected)">
+                        <font-awesome-icon icon="fa-solid fa-square-check"></font-awesome-icon> &nbsp; selecionar {{
+                            isAllSelected ? 'nenhum' : 'todos' }}
                     </button>
 
                     <button type="button" class="btn me-md-2 btn-sm btn-danger" @click.prevent="emit('clearField')">
@@ -29,7 +31,8 @@
             <div class="searcher-body"><!--body to list itens-->
                 <ul>
                     <li class="d-flex justify-content-between" v-for="item in filteredItems" :key="item[keyFieldName]">
-                        <input type="checkbox" :id="item[keyFieldName]" :disabled="!item.available" v-model="item.selected" />
+                        <input type="checkbox" :id="item[keyFieldName]" :disabled="!item.available"
+                            v-model="item.selected" />
                         <label class="flex-fill" :for="item">{{ item[valueFildName] }}</label>
                         <button type="button" class="btn btn-light btn-sm flex-fill" :disabled="!item.available">
                             somente
@@ -39,7 +42,7 @@
 
             </div>
             <div class="searcher-footer">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">                    
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <button type="button" class="btn me-md-2 btn-sm btn-primary" @click.prevent="closeEdit(true)">
                         <font-awesome-icon icon="fa-solid fa-check"></font-awesome-icon> &nbsp; confirmar
                     </button>
@@ -50,10 +53,14 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed, defineEmits } from 'vue';
-const label = ref("minha label");
+import { ref, defineProps, computed, defineEmits, watch } from 'vue';
+
 const searchText = ref("");
 const props = defineProps({
+    label: {
+        type: String,
+        default: "Minha label"
+    },
     name: {
         type: String,
         default: "campoSemNome"
@@ -65,22 +72,29 @@ const props = defineProps({
     valueFildName: {
         type: String,
         default: 'name'
-    },    
-    items: {// maybe is better rename this one to items, and an item to have a property to sinalize if its available or not
+    },
+    items: {
         type: Array,
         default: () => []
+    },
+    filterItems: {
+        type: Boolean,
+        default:true
     }
 });
-const isAllSelected = computed(()=>{
-    return props.items.length ===  selectedItems.value.length;
+const isAllSelected = computed(() => {
+    return props.items.length === selectedItems.value.length;
 });
-const filteredItems = computed(()=>{
-    return props.items.filter((i)=>{
+const filteredItems = computed(() => {
+    if(!props.filterItems) {
+        return props.items;
+    }
+    return props.items.filter((i) => {
         return i[props.valueFildName].toLowerCase().includes(searchText.value.toLowerCase());
     });
 });
-const selectedItems = computed(()=>{
-    return props.items.filter((i)=>i.selected===true);
+const selectedItems = computed(() => {
+    return props.items.filter((i) => i.selected === true);
 });
 const joinedSelectedKeys = computed(() => {
     if (selectedItems.value.length == 0) return "";
@@ -100,16 +114,26 @@ const edit = () => {
 };
 const closeEdit = (apply) => {
     editing.value = false;
-    if (apply===true) emit('applied');
+    if (apply === true) emit('applied');
 };
 const emit = defineEmits({
-    toggleSelection:null,
-    clearField:null,
-    applied: null
+    toggleSelection: null,
+    clearField: null,
+    applied: null,
+    searchChanged: null
 });
+
+
 
 const searchf = ref(null);
 // selected itens
+watch(searchText, (news, olds) => {
+    if (news !== olds) {
+        if (!props.filterItems) {
+            emit("searchChanged", news);
+        }
+    }
+});
 // available itens
 </script>
 <style scoped>
@@ -149,24 +173,29 @@ const searchf = ref(null);
     overflow-y: scroll;
 }
 
-.searcher-body ul, .searcher-body ul li {
-  display: block;
-  padding: 0;
-  margin: 0;
-  list-style: none;
+.searcher-body ul,
+.searcher-body ul li {
+    display: block;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
-.searcher-body ul li input, .searcher-header input[type=checkbox] {
+
+.searcher-body ul li input,
+.searcher-header input[type=checkbox] {
     width: 20px;
     padding: 5px;
     margin-right: 20px;
 }
+
 .searcher-body ul li label {
-  width: 172px;  
+    width: 172px;
 }
+
 .searcher-body ul li button {
-  visibility: hidden;
+    visibility: hidden;
 }
+
 .searcher-body ul li:hover button {
-  visibility: visible;
-}
-</style>
+    visibility: visible;
+}</style>
