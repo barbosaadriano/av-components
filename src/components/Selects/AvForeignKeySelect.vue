@@ -34,7 +34,7 @@
                         <input type="checkbox" :id="item[keyFieldName]" :disabled="!item.available"
                             v-model="item.selected" />
                         <label class="flex-fill" :for="item">{{ item[valueFildName] }}</label>
-                        <button type="button" class="btn btn-light btn-sm flex-fill" :disabled="!item.available">
+                        <button type="button" class="btn btn-light btn-sm flex-fill" @click.prevent="emit('selectedOne',item)" :disabled="!item.available">
                             somente
                         </button>
                     </li>
@@ -42,6 +42,18 @@
 
             </div>
             <div class="searcher-footer">
+                <nav aria-label="Page navigation example" v-show="paginationPages.length>0">
+                    <ul class="pagination pagination-sm justify-content-center">
+                        <li class="page-item" :class="{'disabled':isAtFirstPage()}">
+                            <a class="page-link" @click.prevent="prev" href="#">anterior</a>
+                        </li>
+                        <li class="page-item"  :class="{'active':isCurrentPage(pg)}" v-for="pg in paginationPages" :key="pg"><a @click.prevent="toPage(pg)" class="page-link" href="#">{{ pg }}</a></li>
+                        <li class="page-item" :class="{'disabled':isAtLastPage()}">
+                            <a class="page-link" @click.prevent="next" href="#">próxima</a>
+                        </li>
+                    </ul>
+                </nav>
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <button type="button" class="btn me-md-2 btn-sm btn-primary" @click.prevent="closeEdit(true)">
                         <font-awesome-icon icon="fa-solid fa-check"></font-awesome-icon> &nbsp; confirmar
@@ -79,14 +91,54 @@ const props = defineProps({
     },
     filterItems: {
         type: Boolean,
-        default:true
+        default: true
+    },
+    pagination: {
+        type: Object,
+        default: () => {
+            return {
+                "page": 1,
+                "pages": 1,
+                "rows": 10,
+                "records": 1
+            }
+        }
     }
 });
+
+const paginationPages = computed(()=>{
+    if (props.pagination.pages<2) {
+        return [];
+    }
+    const numbers = Object.keys(new Array(props.pagination.pages).fill(null))
+    .map(Number).map((n)=>n+1).filter((n)=>{
+        return ((n<=5||n>=(props.pagination.pages-5)) || ((props.pagination.pages>10) && (Math.round(props.pagination.pages/2)==n)));
+    });
+    return numbers;
+});
+function isCurrentPage(page) {
+    return props.pagination.page === page;
+}
+function isAtFirstPage() {
+    return props.pagination.page === 1;
+}
+function isAtLastPage() {
+    return props.pagination.page === props.pagination.pages;
+}
+function next() {
+    emit('repaginate',props.pagination.page+1);
+}
+function prev() {
+    emit('repaginate',props.pagination.page-1);
+}
+function toPage(pg){
+    emit('repaginate',pg);
+}
 const isAllSelected = computed(() => {
     return props.items.length === selectedItems.value.length;
 });
 const filteredItems = computed(() => {
-    if(!props.filterItems) {
+    if (!props.filterItems) {
         return props.items;
     }
     return props.items.filter((i) => {
@@ -120,7 +172,9 @@ const emit = defineEmits({
     toggleSelection: null,
     clearField: null,
     applied: null,
-    searchChanged: null
+    searchChanged: null,
+    repaginate: null,
+    selectedOne: null,
 });
 
 
@@ -198,4 +252,5 @@ watch(searchText, (news, olds) => {
 
 .searcher-body ul li:hover button {
     visibility: visible;
-}</style>
+}
+</style>

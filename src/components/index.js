@@ -1,2 +1,3 @@
 import AvForeignKeySelect from './Selects/AvForeignKeySelect.vue';
-export default { AvForeignKeySelect };
+import AvPokemonFk from './AvForeignKeys/AvPokemonFk.vue';
+export default { AvForeignKeySelect, AvPokemonFk};

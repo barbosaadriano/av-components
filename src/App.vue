@@ -9,6 +9,7 @@
       </p>
       <av-foreign-key-select name="meuCampo" label="Search event changed" :items="selectedTest" :filter-items="false" @search-changed="pesquisar" @toggle-selection="mudarSelecao" @clear-field="mudarSelecao(false)"/>
       <av-foreign-key-select name="meuCampo2" label="Search by itself" :items="selectedTest" :filter-items="true" @search-changed="pesquisar" @toggle-selection="mudarSelecao" @clear-field="mudarSelecao(false)"/>
+      <av-pokemon-fk></av-pokemon-fk>
     </div>
 </template>
 
