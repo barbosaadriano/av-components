@@ -7,9 +7,9 @@
         Receive a data source that bring all objects, and some definitions about how is the key name of  objects 
         and what informations (data fields) need to be showned
       </p>
-      <av-foreign-key-select name="meuCampo" label="Search event changed" :items="selectedTest" :filter-items="false" @search-changed="pesquisar" @toggle-selection="mudarSelecao" @clear-field="mudarSelecao(false)"/>
-      <av-foreign-key-select name="meuCampo2" label="Search by itself" :items="selectedTest" :filter-items="true" @search-changed="pesquisar" @toggle-selection="mudarSelecao" @clear-field="mudarSelecao(false)"/>
-      <av-pokemon-fk></av-pokemon-fk>
+      <!-- <av-foreign-key-select name="meuCampo" label="Search event changed" :items="selectedTest" :filter-items="false" @search-changed="pesquisar" @toggle-selection="mudarSelecao" @clear-field="mudarSelecao(false)"/> -->
+      <!-- <av-foreign-key-select name="meuCampo2" label="Search by itself" :items="selectedTest" :filter-items="true" @search-changed="pesquisar" @toggle-selection="mudarSelecao" @clear-field="mudarSelecao(false)"/> -->
+      <av-pokemon-fk label="Pokémon" name="campo3"></av-pokemon-fk>
     </div>
 </template>
 

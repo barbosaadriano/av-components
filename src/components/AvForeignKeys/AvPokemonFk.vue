@@ -1,6 +1,6 @@
 <template>
     <div>
-        <av-foreign-key-select :name="name" :label="label" :items="itens" :filter-items="true" @search-changed="pesquisar"
+        <av-foreign-key-select :name="props.name" :label="props.label" :items="itens" :filter-items="true" @search-changed="pesquisar"
             @toggle-selection="mudarSelecao"  @selected-one="selectOne" @clear-field="mudarSelecao(false)"></av-foreign-key-select>
     </div>
 </template>
