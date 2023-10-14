@@ -4,7 +4,7 @@
         <input type="hidden" :name="props.name" :value="joinedSelectedKeys">
         <div class="input-group">
             <input class="form-control" type="text" :value="joinedSelectedValues" readonly>
-            <button class="btn btn-secondary" @click="edit">
+            <button class="btn btn-secondary" @click.prevent="edit">
                 <font-awesome-icon icon="fa-solid fa-pen-to-square"></font-awesome-icon>
             </button>
         </div>

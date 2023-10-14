@@ -1,6 +1,6 @@
 {
   "name": "av-components",
-  "version": "0.1.1",
+  "version": "0.1.1-alpha",
   "private": false,
   "main": "dist/av-components.common.js",
   "module": "dist/av-components.umd.min.js",
