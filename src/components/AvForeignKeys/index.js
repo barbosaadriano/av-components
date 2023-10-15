@@ -1,2 +1,3 @@
 import AvPokemonFk from './AvPokemonFk.vue';
-export default { AvPokemonFk };
+import AvCustomFk from './AvCustomFk.vue';
+export default { AvPokemonFk, AvCustomFk };

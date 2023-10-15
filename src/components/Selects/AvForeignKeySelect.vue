@@ -81,7 +81,7 @@ const props = defineProps({
         type: String,
         default: 'id'
     },
-    valueFildName: {
+    valueFieldName: {
         type: String,
         default: 'name'
     },
@@ -142,7 +142,7 @@ const filteredItems = computed(() => {
         return props.items;
     }
     return props.items.filter((i) => {
-        return i[props.valueFildName].toLowerCase().includes(searchText.value.toLowerCase());
+        return i[props.valueFieldName].toLowerCase().includes(searchText.value.toLowerCase());
     });
 });
 const selectedItems = computed(() => {
@@ -154,7 +154,7 @@ const joinedSelectedKeys = computed(() => {
 });
 const joinedSelectedValues = computed(() => {
     if (selectedItems.value.length == 0) return "";
-    return selectedItems.value.map((si) => si[props.valueFildName]).join(",");
+    return selectedItems.value.map((si) => si[props.valueFieldName]).join(",");
 });
 
 const editing = ref(false);
