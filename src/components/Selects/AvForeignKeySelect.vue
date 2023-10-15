@@ -33,7 +33,7 @@
                     <li class="d-flex justify-content-between" v-for="item in filteredItems" :key="item[keyFieldName]">
                         <input type="checkbox" :id="item[keyFieldName]" :disabled="!item.available"
                             v-model="item.selected" />
-                        <label class="flex-fill" :for="item[keyFieldName]">{{ item[valueFildName] }}</label>
+                        <label class="flex-fill" :for="item[keyFieldName]">{{ item[valueFieldName] }}</label>
                         <button type="button" class="btn btn-light btn-sm flex-fill" @click.prevent="emit('selectedOne',item)" :disabled="!item.available">
                             somente
                         </button>
