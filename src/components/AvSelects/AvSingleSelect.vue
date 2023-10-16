@@ -1,33 +1,64 @@
 <script setup>
-import {ref} from 'vue';
+import { ref, computed} from 'vue';
 
 
 const selected = ref("");
 const searchText = ref("");
 const inputSearch = ref(null);
+const pointer = ref(-1);
+
+const itens = ref(['teste 1','teste 2','teste 3', 'teste 4']);
+
+const itensWithoutSelected = computed(()=>{
+    return itens.value.filter((f)=>f!==selected.value);
+});
 
 function setFocus(){
     inputSearch.value.focus();
 }
 function clearSearchText() {
     searchText.value = "";
+    pointer.value = -1;
+}
+function clearSelected() {
+    selected.value="";
+}
+function clearSelectedIfEmptySearchText() {
+    if (searchText.value === "") {
+        clearSelected();
+    }
+}
+function selectItem(item) {
+    if (searchText.value) {
+        selected.value = item;
+        clearSearchText();
+    }
+}
+function selectActualIndex() {
+    if (pointer.value>=0) {
+        selectItem(itensWithoutSelected.value[pointer.value]);
+    }
+}
+function upNavigate() {
+    if (pointer.value>0 && searchText.value) pointer.value--;
+}
+function downNavigate() {
+    if (pointer.value<itensWithoutSelected.value.length-1 && searchText.value) pointer.value++;
 }
 </script>
 
 <template>
     <div class="av-select" @click="setFocus">
+        <p v-show="!selected && !searchText" class="placeholder">placeholder</p>        
         <div v-show="selected" class="item-selected">
             <p>{{ selected }}</p>
-            <button @click="selected=''">X</button>
+            <button @click="clearSelected">X</button>
         </div>        
         
         <div  class="search"> 
-            <input v-model.trim="searchText" ref="inputSearch" type="text" @keyup.esc="clearSearchText">
+            <input v-model.trim="searchText" ref="inputSearch" type="text" @keyup.enter="selectActualIndex" @keyup.up="upNavigate" @keyup.down="downNavigate" @keydown.delete="clearSelectedIfEmptySearchText" @keyup.esc="clearSearchText">
             <div v-show="searchText" class="list-wrapper">
-                <div class="option" @click="selected='Opção 2'">Opção 2</div>
-                <div class="option selected">Opção 1</div>
-                <div class="option">Opção 3</div>
-                <div class="option">Opção 4</div>
+                <div class="option" :class="{'selected':idx===pointer}" v-for="(it,idx) in itensWithoutSelected" :key="idx" @click="selectItem(it)">{{ it }}</div>
             </div>
         </div>
     </div>
@@ -103,5 +134,12 @@ function clearSearchText() {
 }
 .option:hover {
     background: rgba(215, 225, 240, 0.5);
+}
+p.placeholder {
+    color: #999;
+    padding: 0px;
+    margin: 0px;
+    position: absolute;
+    z-index: 1;
 }
 </style>
