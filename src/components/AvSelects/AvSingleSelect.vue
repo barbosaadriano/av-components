@@ -1,20 +1,28 @@
 <script setup>
 import {ref} from 'vue';
 
+
 const selected = ref("");
 const searchText = ref("");
+const inputSearch = ref(null);
 
+function setFocus(){
+    inputSearch.value.focus();
+}
+function clearSearchText() {
+    searchText.value = "";
+}
 </script>
 
 <template>
-    <div class="av-select">
+    <div class="av-select" @click="setFocus">
         <div v-show="selected" class="item-selected">
             <p>{{ selected }}</p>
             <button @click="selected=''">X</button>
         </div>        
         
         <div  class="search"> 
-            <input v-model.trim="searchText" type="text">
+            <input v-model.trim="searchText" ref="inputSearch" type="text" @keyup.esc="clearSearchText">
             <div v-show="searchText" class="list-wrapper">
                 <div class="option" @click="selected='Opção 2'">Opção 2</div>
                 <div class="option selected">Opção 1</div>
@@ -41,6 +49,7 @@ const searchText = ref("");
     justify-content: flex-start;
     box-shadow: inset 1px 1px 5px #eee;
     width: 100%;
+    min-height: 50px;
 }
 .item-selected {
     display: flex;
