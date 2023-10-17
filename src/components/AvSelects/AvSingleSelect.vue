@@ -1,11 +1,10 @@
 <script setup>
-import { ref, computed, defineProps, defineEmits, watch } from 'vue';
+import { ref, computed, defineProps, defineEmits, watch} from 'vue';
 
-
-const selected = ref("");
-const searchText = ref("teste");
+const searchText = ref("");
 const inputSearch = ref(null);
 const pointer = ref(-1);
+const selectedLocal = ref(null);
 
 const props = defineProps({
     itens: {
@@ -30,14 +29,26 @@ const props = defineProps({
     selectedItem:{
         type: Object,
         default(){
-            return {}
+            return {
+            }
         }
     }
-})
+});
+
+function hasSelected(){
+    return Object.keys(selected).length>0 && Object.keys(selected).contains(props.keyAttr);
+}
+
+const selected = computed(()=>{    
+    if (selectedLocal.value) {
+        return selectedLocal.value;
+    }    
+    return props.selectedItem;
+});
 const itens = computed(()=>{return props.itens});
 
-const itensWithoutSelected = computed(()=>{
-    return itens.value.filter((f)=>f!==selected.value);
+const itensWithoutSelected = computed(()=>{    
+    return itens.value.filter((f)=>f[props.keyAttr]!==selected[props.keyAttr]);
 });
 
 function setFocus(){
@@ -48,7 +59,7 @@ function clearSearchText() {
     pointer.value = -1;
 }
 function clearSelected() {
-    selected.value="";
+    selectedLocal.value = null;
 }
 function clearSelectedIfEmptySearchText() {
     if (searchText.value === "") {
@@ -57,7 +68,7 @@ function clearSelectedIfEmptySearchText() {
 }
 function selectItem(item) {
     if (searchText.value) {
-        selected.value = item;
+        selectedLocal.value = item;
         clearSearchText();
     }
 }
@@ -75,21 +86,21 @@ function downNavigate() {
     if (pointer.value<itensWithoutSelected.value.length-1 && searchText.value) pointer.value++;
 }
 function scrolled(evt) {
-    emit("onScrolled",evt);
+    emit("scrolled",evt);
 }
 
 const emit = defineEmits({
-    onChanged: null,
-    onTyped: null,
-    onScrolled: null
+    changed: null,
+    typed: null,
+    scrolled: null
 });
 
 watch(searchText,(newS)=>{
-    emit('onTyped',newS)
+    emit('typed',newS)
 });
 
-watch(selected,(newS)=>{
-    emit('onChanged',newS);
+watch(selectedLocal,(newS)=>{
+    emit('changed',newS);    
 });
 
 </script>
@@ -97,9 +108,9 @@ watch(selected,(newS)=>{
 <template>
     <div class="av-select" @click="setFocus">
         <input type="hidden" :name="props.hiddenFieldName">
-        <p v-show="!selected && !searchText" class="placeholder">placeholder</p>        
-        <div v-show="selected" class="item-selected">
-            <p>{{ selected }}</p>
+        <p v-show="!hasSelected && !searchText" class="placeholder">placeholder</p>        
+        <div v-show="selected[props.valueAttr]" class="item-selected">
+            <p>{{ selected[props.valueAttr] }}</p>
             <button @click="clearSelected">X</button>
         </div>        
         
@@ -107,8 +118,8 @@ watch(selected,(newS)=>{
             <input v-model.trim="searchText" ref="inputSearch" type="text" @keyup.enter="selectActualIndex" @keyup.up="upNavigate" @keyup.down="downNavigate" @keydown.delete="clearSelectedIfEmptySearchText" @keyup.esc="clearSearchText">
             <div v-show="searchText" class="list-wrapper">                
                 <div class="list" @scroll.passive="scrolled">
-                    <div v-show="!itens.length">Nenhum item disponível</div>
-                    <div class="option" :class="{'selected':idx===pointer}" v-for="(it,idx) in itensWithoutSelected" :key="idx" @click="selectItem(it)">{{ it }}</div>
+                    <div v-show="!itensWithoutSelected.length">Nenhum item disponível</div>
+                    <div class="option" :class="{'selected':idx===pointer}" v-for="(it,idx) in itensWithoutSelected" :key="idx" @click="selectItem(it)">{{ it[props.valueAttr] }}</div>
                 </div>
             </div>
         </div>
@@ -181,6 +192,7 @@ watch(selected,(newS)=>{
 }
 .search {
     position: relative;
+    z-index: 10;
 }
 .option {
     background: #fefefe;

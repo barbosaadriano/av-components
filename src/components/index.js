@@ -1,2 +1,4 @@
 import AvSingleSelect from './AvSelects/AvSingleSelect.vue';
-export default { AvSingleSelect };
+import AvSingleStatusSelect from './AvSelects/AvSingleStatusSelect.vue';
+
+export default { AvSingleSelect, AvSingleStatusSelect };
