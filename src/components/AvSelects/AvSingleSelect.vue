@@ -1,13 +1,40 @@
 <script setup>
-import { ref, computed} from 'vue';
+import { ref, computed, defineProps, defineEmits, watch } from 'vue';
 
 
 const selected = ref("");
-const searchText = ref("");
+const searchText = ref("teste");
 const inputSearch = ref(null);
 const pointer = ref(-1);
 
-const itens = ref(['teste 1','teste 2','teste 3', 'teste 4']);
+const props = defineProps({
+    itens: {
+        type: Array,
+        required:true,
+        default() {
+            return [];
+        }
+    },
+    hiddenFieldName:{
+        type:String,
+        required:true
+    },
+    keyAttr:{
+        type:String,
+        default: 'id'
+    },
+    valueAttr:{
+        type:String,
+        default: 'name'
+    },
+    selectedItem:{
+        type: Object,
+        default(){
+            return {}
+        }
+    }
+})
+const itens = computed(()=>{return props.itens});
 
 const itensWithoutSelected = computed(()=>{
     return itens.value.filter((f)=>f!==selected.value);
@@ -37,6 +64,8 @@ function selectItem(item) {
 function selectActualIndex() {
     if (pointer.value>=0) {
         selectItem(itensWithoutSelected.value[pointer.value]);
+    } else {
+        searchText.value = " ";
     }
 }
 function upNavigate() {
@@ -45,10 +74,29 @@ function upNavigate() {
 function downNavigate() {
     if (pointer.value<itensWithoutSelected.value.length-1 && searchText.value) pointer.value++;
 }
+function scrolled(evt) {
+    emit("onScrolled",evt);
+}
+
+const emit = defineEmits({
+    onChanged: null,
+    onTyped: null,
+    onScrolled: null
+});
+
+watch(searchText,(newS)=>{
+    emit('onTyped',newS)
+});
+
+watch(selected,(newS)=>{
+    emit('onChanged',newS);
+});
+
 </script>
 
 <template>
     <div class="av-select" @click="setFocus">
+        <input type="hidden" :name="props.hiddenFieldName">
         <p v-show="!selected && !searchText" class="placeholder">placeholder</p>        
         <div v-show="selected" class="item-selected">
             <p>{{ selected }}</p>
@@ -57,8 +105,11 @@ function downNavigate() {
         
         <div  class="search"> 
             <input v-model.trim="searchText" ref="inputSearch" type="text" @keyup.enter="selectActualIndex" @keyup.up="upNavigate" @keyup.down="downNavigate" @keydown.delete="clearSelectedIfEmptySearchText" @keyup.esc="clearSearchText">
-            <div v-show="searchText" class="list-wrapper">
-                <div class="option" :class="{'selected':idx===pointer}" v-for="(it,idx) in itensWithoutSelected" :key="idx" @click="selectItem(it)">{{ it }}</div>
+            <div v-show="searchText" class="list-wrapper">                
+                <div class="list" @scroll.passive="scrolled">
+                    <div v-show="!itens.length">Nenhum item disponível</div>
+                    <div class="option" :class="{'selected':idx===pointer}" v-for="(it,idx) in itensWithoutSelected" :key="idx" @click="selectItem(it)">{{ it }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -107,6 +158,7 @@ function downNavigate() {
 .av-select input {
     border: none;
     outline: none;
+    background: transparent;
 }
 .list-wrapper {
     position: absolute;
@@ -120,6 +172,12 @@ function downNavigate() {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
+    
+}
+.list {
+    height: 100%;
+    overflow: hidden;
+    overflow-y: auto;
 }
 .search {
     position: relative;
@@ -136,10 +194,9 @@ function downNavigate() {
     background: rgba(215, 225, 240, 0.5);
 }
 p.placeholder {
-    color: #999;
+    color: #ccc;
     padding: 0px;
     margin: 0px;
     position: absolute;
-    z-index: 1;
 }
 </style>
