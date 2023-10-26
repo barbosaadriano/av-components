@@ -106,20 +106,20 @@ watch(selectedLocal,(newS)=>{
 </script>
 
 <template>
-    <div class="av-select" @click="setFocus">
+    <div class="av-select" @click.prevent="setFocus">
         <input type="hidden" :name="props.hiddenFieldName">
         <p v-show="!hasSelected && !searchText" class="placeholder">placeholder</p>        
         <div v-show="selected[props.valueAttr]" class="item-selected">
             <p>{{ selected[props.valueAttr] }}</p>
-            <button @click="clearSelected">X</button>
+            <button @click.prevent="clearSelected">X</button>
         </div>        
         
         <div  class="search"> 
-            <input v-model.trim="searchText" ref="inputSearch" type="text" @keyup.enter="selectActualIndex" @keyup.up="upNavigate" @keyup.down="downNavigate" @keydown.delete="clearSelectedIfEmptySearchText" @keyup.esc="clearSearchText">
+            <input v-model.trim="searchText" ref="inputSearch" type="text" @keyup.enter.prevent="selectActualIndex" @keyup.up.prevent="upNavigate" @keyup.down.prevent="downNavigate" @keydown.delete.prevent="clearSelectedIfEmptySearchText" @keyup.esc.prevent="clearSearchText">
             <div v-show="searchText" class="list-wrapper">                
                 <div class="list" @scroll.passive="scrolled">
                     <div v-show="!itensWithoutSelected.length">Nenhum item disponível</div>
-                    <div class="option" :class="{'selected':idx===pointer}" v-for="(it,idx) in itensWithoutSelected" :key="idx" @click="selectItem(it)">{{ it[props.valueAttr] }}</div>
+                    <div class="option" :class="{'selected':idx===pointer}" v-for="(it,idx) in itensWithoutSelected" :key="idx" @click.prevent="selectItem(it)">{{ it[props.valueAttr] }}</div>
                 </div>
             </div>
         </div>
